@@ -109,40 +109,40 @@ public class CPMTransformerService implements IClassTransformer {
 
 			@Override
 			public ClassNode apply(ClassNode input) {
-				for(MethodNode m : input.methods) {
-					if((m.name.equals("a") && m.desc.equals("(Lsv;DDDFF)V")) || m.name.equals("doRender")) {
-						LOG.info("CPM Armor Hook: Found doRender method");
-						m.instructions.insertBefore(m.instructions.getFirst(), new MethodInsnNode(Opcodes.INVOKESTATIC, HOOKS_CLASS, "prePlayerRender", "()V", false));
-						int callLoc = 0;
-						for (ListIterator<AbstractInsnNode> it = m.instructions.iterator(); it.hasNext(); ) {
-							AbstractInsnNode insnNode = it.next();
-							if(insnNode instanceof MethodInsnNode) {
-								MethodInsnNode mn = (MethodInsnNode) insnNode;
-								if((mn.name.equals("a") && mn.desc.equals("(Lsa;FFFFFF)V")) || mn.name.equals("render")) {
-									LOG.info("CPM Armor Hook: Found render call");
-									Type[] argsD = Type.getArgumentTypes(mn.desc);
-									Type[] args = new Type[argsD.length + 3];
-									args[0] = Type.getObjectType(mn.owner);
-									System.arraycopy(argsD, 0, args, 1, argsD.length);
-									args[args.length - 2] = Type.getType("Lnet/minecraft/client/renderer/entity/RendererLivingEntity;");
-									args[args.length - 1] = Type.INT_TYPE;
-									mn.desc = Type.getMethodDescriptor(Type.VOID_TYPE, args);
-									mn.name = "renderPass";
-									mn.setOpcode(Opcodes.INVOKESTATIC);
-									mn.owner = HOOKS_CLASS;
-									InsnList lst = new InsnList();
-									lst.add(new VarInsnNode(Opcodes.ALOAD, 0));
-									lst.add(new LdcInsnNode(callLoc++));
-									m.instructions.insertBefore(insnNode, lst);
-									LOG.info("CPM Armor Hook/Layer: injected");
-								} else if (mn.name.equals("glColor4f")) {
-									mn.owner = HOOKS_CLASS;
-									LOG.info("CPM Player Renderer/Color hook: injected");
-								}
-							}
-						}
-					}
-				}
+				// for(MethodNode m : input.methods) {
+				// 	if((m.name.equals("a") && m.desc.equals("(Lsv;DDDFF)V")) || m.name.equals("doRender")) {
+				// 		LOG.info("CPM Armor Hook: Found doRender method");
+				// 		m.instructions.insertBefore(m.instructions.getFirst(), new MethodInsnNode(Opcodes.INVOKESTATIC, HOOKS_CLASS, "prePlayerRender", "()V", false));
+				// 		int callLoc = 0;
+				// 		for (ListIterator<AbstractInsnNode> it = m.instructions.iterator(); it.hasNext(); ) {
+				// 			AbstractInsnNode insnNode = it.next();
+				// 			if(insnNode instanceof MethodInsnNode) {
+				// 				MethodInsnNode mn = (MethodInsnNode) insnNode;
+				// 				if((mn.name.equals("a") && mn.desc.equals("(Lsa;FFFFFF)V")) || mn.name.equals("render")) {
+				// 					LOG.info("CPM Armor Hook: Found render call");
+				// 					Type[] argsD = Type.getArgumentTypes(mn.desc);
+				// 					Type[] args = new Type[argsD.length + 3];
+				// 					args[0] = Type.getObjectType(mn.owner);
+				// 					System.arraycopy(argsD, 0, args, 1, argsD.length);
+				// 					args[args.length - 2] = Type.getType("Lnet/minecraft/client/renderer/entity/RendererLivingEntity;");
+				// 					args[args.length - 1] = Type.INT_TYPE;
+				// 					mn.desc = Type.getMethodDescriptor(Type.VOID_TYPE, args);
+				// 					mn.name = "renderPass";
+				// 					mn.setOpcode(Opcodes.INVOKESTATIC);
+				// 					mn.owner = HOOKS_CLASS;
+				// 					InsnList lst = new InsnList();
+				// 					lst.add(new VarInsnNode(Opcodes.ALOAD, 0));
+				// 					lst.add(new LdcInsnNode(callLoc++));
+				// 					m.instructions.insertBefore(insnNode, lst);
+				// 					LOG.info("CPM Armor Hook/Layer: injected");
+				// 				} else if (mn.name.equals("glColor4f")) {
+				// 					mn.owner = HOOKS_CLASS;
+				// 					LOG.info("CPM Player Renderer/Color hook: injected");
+				// 				}
+				// 			}
+				// 		}
+				// 	}
+				// }
 				return input;
 			}
 		});
